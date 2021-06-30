@@ -106,7 +106,7 @@ public final class MilkyWayData {
         ByteBuffer wrap;
         byte[] buf;
 
-        final int base = 0;
+        final int base = 24 + 4;
 
         buf = Arrays.copyOfRange(data, base, base + 8);
         Debug.printByteArrayDump(Debug.logger, "totalGenCapMore", buf);
