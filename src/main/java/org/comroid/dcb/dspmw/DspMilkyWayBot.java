@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class DspMilkyWayBot implements MessageCreateListener {
     public static final String ERROR_RESPONSE = "Error:500";
     public static final FileHandle DIR = new FileHandle("/srv/dcb/dsp/mwv/", true);
-    private static final Logger logger = LogManager.getLogger();
+    public static final Logger logger = LogManager.getLogger();
     public static DspMilkyWayBot instance;
     private final FileHandle dir;
     private final FileHandle token;
@@ -129,7 +129,7 @@ public class DspMilkyWayBot implements MessageCreateListener {
             StringWriter ex = new StringWriter();
             PrintWriter pw = new PrintWriter(ex);
             e.printStackTrace(pw);
-            str = ex.toString();
+            str = "Could not parse Milky Way data: " + ex;
             pw.close();
         }
         logger.info("Data: " + str);

@@ -1,6 +1,7 @@
 package org.comroid.dcb.dspmw.milkyway;
 
 import org.comroid.api.BitmaskAttribute;
+import org.comroid.dcb.dspmw.DspMilkyWayBot;
 import org.comroid.util.Bitmask;
 import org.comroid.util.Debug;
 
