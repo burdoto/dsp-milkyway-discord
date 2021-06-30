@@ -40,13 +40,12 @@ public final class MilkyWayData {
     @Override
     public String toString() {
         return String.format("MilkyWayData{" +
-                        "\n\ttotalGenCapMore\t\t= %d," +
-                        "\n\ttotalGenCapLess\t\t= %d," +
-                        "\n\ttotalSails\t\t\t= %d," +
+                        "\n\ttotalGenerated\t\t= %s," +
+                        "\n\ttotalSails\t\t\t= %s," +
                         "\n\ttotalPlayers\t\t= %d," +
                         "\n\ttotalSpheres\t\t= %d" +
                         "\n}",
-                totalGenCapMore, totalGenCapLess, totalSails, totalPlayers, totalSpheres);
+                getPowerGen(), getSailsCount(), totalPlayers, totalSpheres);
     }
 
     private MilkyWayData() {
@@ -80,44 +79,87 @@ public final class MilkyWayData {
             totalPlayer = BitConverter.ToInt32(resData, num + 24);
             totalDysonSphere = BitConverter.ToInt32(resData, num + 28);
             num += 32;
+
+
+            ...
+
+
+		arrowRt.eulerAngles = (descActive ? new Vector3(0f, 0f, -90f) : new Vector3(0f, 0f, 90f));
+		if (tweener.normalizedTime > 0.8f && scrollToTarget)
+		{
+			double now = displayTotalDysonSphere;
+			double now2 = displayTotalGenCapLessThanE;
+			double now3 = displayTotalSailLaunchedLessThanE;
+			now = Lerp.Tween(now, targetTotalDysonSphere, 6.0);
+			now2 = Lerp.Tween(now2, targetTotalGenCapLessThanE, 16.0002);
+			now3 = Lerp.Tween(now3, targetTotalSailLaunchedLessThanE, Localization.isCJK ? 4.9998000000000005 : 6.0);
+			displayTotalDysonSphere = (long)Math.Ceiling(now);
+			displayTotalGenCapLessThanE = (long)Math.Ceiling(now2);
+			displayTotalSailLaunchedLessThanE = (long)Math.Ceiling(now3);
+		}
+		totalPlayerText.text = displayTotalDysonSphere.ToString("#,##0");
+		totalGenCapsText.text = PowerGenToString(displayTotalGenCapLessThanE, displayTotalGenCapMoreThanE);
+		totalsailLaunchedText.text = SailToString(displayTotalSailLaunchedLessThanE);
          */
     public static MilkyWayData read(byte[] data) {
         MilkyWayData it = new MilkyWayData();
         ByteBuffer wrap;
         byte[] buf;
 
-        final int base = 24 + 4;
+        final int base = 0;
 
         buf = Arrays.copyOfRange(data, base, base + 8);
         Debug.printByteArrayDump(Debug.logger, "totalGenCapMore", buf);
         wrap = ByteBuffer.wrap(buf);
-        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        wrap.order(ByteOrder.BIG_ENDIAN);
         it.totalGenCapMore = wrap.getLong();
 
         buf = Arrays.copyOfRange(data, (base + 8), (base + 8) + 8);
         Debug.printByteArrayDump(Debug.logger, "totalGenCapLess", buf);
         wrap = ByteBuffer.wrap(buf);
-        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        wrap.order(ByteOrder.BIG_ENDIAN);
         it.totalGenCapLess = wrap.getLong();
 
         buf = Arrays.copyOfRange(data, (base + 16), (base + 16) + 8);
         Debug.printByteArrayDump(Debug.logger, "totalSails", buf);
         wrap = ByteBuffer.wrap(buf);
-        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        wrap.order(ByteOrder.BIG_ENDIAN);
         it.totalSails = wrap.getLong();
 
         buf = Arrays.copyOfRange(data, (base + 24), (base + 24) + 4);
         Debug.printByteArrayDump(Debug.logger, "totalPlayers", buf);
         wrap = ByteBuffer.wrap(buf);
-        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        wrap.order(ByteOrder.BIG_ENDIAN);
         it.totalPlayers = wrap.getInt();
 
         buf = Arrays.copyOfRange(data, (base + 28), (base + 28) + 4);
         Debug.printByteArrayDump(Debug.logger, "totalSpheres", buf);
         wrap = ByteBuffer.wrap(buf);
-        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        wrap.order(ByteOrder.BIG_ENDIAN);
         it.totalSpheres = wrap.getInt();
 
         return it;
+    }
+
+    public String getPowerGen() {
+        return powerGenToString(totalGenCapLess, totalGenCapMore);
+    }
+
+    public String getSailsCount() {
+        return sailToString(totalSails);
+    }
+
+    private String powerGenToString(long low, long high)
+    {
+        if (high <= 0)
+        {
+            return String.format("%3d", low) + " W";
+        }
+        return Long.toString(high).substring(0, 4) + String.format("%18d", low) + " W";
+    }
+
+    private String sailToString(long count)
+    {
+        return String.format("%4.0f", ((double)count / 1000000.0 - 0.5));
     }
 }
