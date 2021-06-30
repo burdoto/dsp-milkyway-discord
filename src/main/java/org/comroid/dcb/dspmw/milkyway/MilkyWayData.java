@@ -1,6 +1,7 @@
 package org.comroid.dcb.dspmw.milkyway;
 
 import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 import java.util.Arrays;
 
 public final class MilkyWayData {
@@ -70,38 +71,32 @@ public final class MilkyWayData {
          */
     public static MilkyWayData read(byte[] data) {
         MilkyWayData it = new MilkyWayData();
-        ByteBuffer bbuf;
-        byte[] buf;
+        ByteBuffer buf;
 
-        bbuf = ByteBuffer.allocate(8);
-        buf = Arrays.copyOfRange(data, 28, 35);
-        for (int i = 0; i < buf.length; i++)
-            bbuf.put(i, buf[i]);
-        it.totalGenCapMore = bbuf.getLong();
+        buf = ByteBuffer.allocate(8);
+        for (byte b : Arrays.copyOfRange(data, 28, 35))
+            buf.put(b);
+        it.totalGenCapMore = buf.getLong();
 
-        bbuf.clear();
-        buf = Arrays.copyOfRange(data, 36, 43);
-        for (int i = 0; i < buf.length; i++)
-            bbuf.put(i, buf[i]);
-        it.totalGenCapLess = bbuf.getLong();
+        buf.clear();
+        for (byte b : Arrays.copyOfRange(data, 36, 43))
+            buf.put(b);
+        it.totalGenCapLess = buf.getLong();
 
-        bbuf.clear();
-        buf = Arrays.copyOfRange(data, 44, 51);
-        for (int i = 0; i < buf.length; i++)
-            bbuf.put(i, buf[i]);
-        it.totalSails = bbuf.getLong();
+        buf.clear();
+        for (byte b : Arrays.copyOfRange(data, 44, 51))
+            buf.put(b);
+        it.totalSails = buf.getLong();
 
-        bbuf.clear();
-        buf = Arrays.copyOfRange(data, 52, 55);
-        for (int i = 0; i < buf.length; i++)
-            bbuf.put(i, buf[i]);
-        it.totalPlayers = bbuf.getInt();
+        buf = ByteBuffer.allocate(4);
+        for (byte b : Arrays.copyOfRange(data, 52, 55))
+            buf.put(b);
+        it.totalPlayers = buf.getInt();
 
-        bbuf.clear();
-        buf = Arrays.copyOfRange(data, 56, 59);
-        for (int i = 0; i < buf.length; i++)
-            bbuf.put(i, buf[i]);
-        it.totalSpheres = bbuf.getInt();
+        buf.clear();
+        for (byte b : Arrays.copyOfRange(data, 56, 59))
+            buf.put(b);
+        it.totalSpheres = buf.getInt();
 
         return it;
     }
