@@ -124,7 +124,7 @@ public class DspMilkyWayBot implements MessageCreateListener {
         String str;
         try {
             MilkyWayData data = requestFullData().join();
-            str = data == null ? "Could not retrieve Milky Way data" : data.toString();
+            str = data == null ? "Could not retrieve Milky Way data" : ("```" + data + "```");
         } catch (Throwable e) {
             StringWriter ex = new StringWriter();
             PrintWriter pw = new PrintWriter(ex);

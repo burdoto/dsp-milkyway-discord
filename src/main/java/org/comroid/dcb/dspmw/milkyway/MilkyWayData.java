@@ -1,5 +1,9 @@
 package org.comroid.dcb.dspmw.milkyway;
 
+import org.comroid.api.BitmaskAttribute;
+import org.comroid.util.Bitmask;
+import org.comroid.util.Debug;
+
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.util.Arrays;
@@ -33,7 +37,7 @@ public final class MilkyWayData {
 
     @Override
     public String toString() {
-        return String.format("MilkyWayData{totalGenCapMore=%d, totalGenCapLess=%d, totalSails=%d, totalPlayers=%d, totalSpheres=%d}",
+        return String.format("MilkyWayData{\n\ttotalGenCapMore\t=%d,\n\ttotalGenCapLess\t=%d,\n\ttotalSails\t\t=%d,\n\ttotalPlayers\t\t=%d,\n\ttotalSpheres\t\t=%d\n}",
                 totalGenCapMore, totalGenCapLess, totalSails, totalPlayers, totalSpheres);
     }
 
@@ -71,32 +75,27 @@ public final class MilkyWayData {
          */
     public static MilkyWayData read(byte[] data) {
         MilkyWayData it = new MilkyWayData();
-        ByteBuffer buf;
+        byte[] buf;
 
-        buf = ByteBuffer.allocate(8);
-        for (byte b : Arrays.copyOfRange(data, 28, 35))
-            buf.put(b);
-        it.totalGenCapMore = buf.getLong();
+        buf = Arrays.copyOfRange(data, 28, 28 + 8);
+        Debug.printByteArrayDump(Debug.logger, "totalGenCapMore", buf);
+        it.totalGenCapMore = ByteBuffer.wrap(buf).getLong();
 
-        buf.clear();
-        for (byte b : Arrays.copyOfRange(data, 36, 43))
-            buf.put(b);
-        it.totalGenCapLess = buf.getLong();
+        buf = Arrays.copyOfRange(data, 36, 36 + 8);
+        Debug.printByteArrayDump(Debug.logger, "totalGenCapLess", buf);
+        it.totalGenCapLess = ByteBuffer.wrap(buf).getLong();
 
-        buf.clear();
-        for (byte b : Arrays.copyOfRange(data, 44, 51))
-            buf.put(b);
-        it.totalSails = buf.getLong();
+        buf = Arrays.copyOfRange(data, 44, 44 + 8);
+        Debug.printByteArrayDump(Debug.logger, "totalSails", buf);
+        it.totalSails = ByteBuffer.wrap(buf).getLong();
 
-        buf = ByteBuffer.allocate(4);
-        for (byte b : Arrays.copyOfRange(data, 52, 55))
-            buf.put(b);
-        it.totalPlayers = buf.getInt();
+        buf = Arrays.copyOfRange(data, 52, 52 + 4);
+        Debug.printByteArrayDump(Debug.logger, "totalPlayers", buf);
+        it.totalPlayers = ByteBuffer.wrap(buf).getInt();
 
-        buf.clear();
-        for (byte b : Arrays.copyOfRange(data, 56, 59))
-            buf.put(b);
-        it.totalSpheres = buf.getInt();
+        buf = Arrays.copyOfRange(data, 56, 56 + 4);
+        Debug.printByteArrayDump(Debug.logger, "totalSpheres", buf);
+        it.totalSpheres = ByteBuffer.wrap(buf).getInt();
 
         return it;
     }
