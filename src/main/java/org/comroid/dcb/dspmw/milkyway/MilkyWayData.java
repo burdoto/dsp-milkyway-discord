@@ -5,6 +5,7 @@ import org.comroid.util.Bitmask;
 import org.comroid.util.Debug;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.LongBuffer;
 import java.util.Arrays;
 
@@ -81,27 +82,40 @@ public final class MilkyWayData {
          */
     public static MilkyWayData read(byte[] data) {
         MilkyWayData it = new MilkyWayData();
+        ByteBuffer wrap;
         byte[] buf;
 
-        buf = Arrays.copyOfRange(data, 28, 28 + 8);
+        final int base = 24 + 4;
+
+        buf = Arrays.copyOfRange(data, base, base + 8);
         Debug.printByteArrayDump(Debug.logger, "totalGenCapMore", buf);
-        it.totalGenCapMore = ByteBuffer.wrap(buf).getLong();
+        wrap = ByteBuffer.wrap(buf);
+        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        it.totalGenCapMore = wrap.getLong();
 
-        buf = Arrays.copyOfRange(data, 36, 36 + 8);
+        buf = Arrays.copyOfRange(data, (base + 8), (base + 8) + 8);
         Debug.printByteArrayDump(Debug.logger, "totalGenCapLess", buf);
-        it.totalGenCapLess = ByteBuffer.wrap(buf).getLong();
+        wrap = ByteBuffer.wrap(buf);
+        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        it.totalGenCapLess = wrap.getLong();
 
-        buf = Arrays.copyOfRange(data, 44, 44 + 8);
+        buf = Arrays.copyOfRange(data, (base + 16), (base + 16) + 8);
         Debug.printByteArrayDump(Debug.logger, "totalSails", buf);
-        it.totalSails = ByteBuffer.wrap(buf).getLong();
+        wrap = ByteBuffer.wrap(buf);
+        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        it.totalSails = wrap.getLong();
 
-        buf = Arrays.copyOfRange(data, 52, 52 + 4);
+        buf = Arrays.copyOfRange(data, (base + 24), (base + 24) + 4);
         Debug.printByteArrayDump(Debug.logger, "totalPlayers", buf);
-        it.totalPlayers = ByteBuffer.wrap(buf).getInt();
+        wrap = ByteBuffer.wrap(buf);
+        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        it.totalPlayers = wrap.getInt();
 
-        buf = Arrays.copyOfRange(data, 56, 56 + 4);
+        buf = Arrays.copyOfRange(data, (base + 28), (base + 28) + 4);
         Debug.printByteArrayDump(Debug.logger, "totalSpheres", buf);
-        it.totalSpheres = ByteBuffer.wrap(buf).getInt();
+        wrap = ByteBuffer.wrap(buf);
+        wrap.order(ByteOrder.LITTLE_ENDIAN);
+        it.totalSpheres = wrap.getInt();
 
         return it;
     }
