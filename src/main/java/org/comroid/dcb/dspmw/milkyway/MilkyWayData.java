@@ -37,7 +37,13 @@ public final class MilkyWayData {
 
     @Override
     public String toString() {
-        return String.format("MilkyWayData{\n\ttotalGenCapMore\t=%d,\n\ttotalGenCapLess\t=%d,\n\ttotalSails\t\t=%d,\n\ttotalPlayers\t\t=%d,\n\ttotalSpheres\t\t=%d\n}",
+        return String.format("MilkyWayData{" +
+                        "\n\ttotalGenCapMore\t\t= %d," +
+                        "\n\ttotalGenCapLess\t\t= %d," +
+                        "\n\ttotalSails\t\t\t= %d," +
+                        "\n\ttotalPlayers\t\t= %d," +
+                        "\n\ttotalSpheres\t\t= %d" +
+                        "\n}",
                 totalGenCapMore, totalGenCapLess, totalSails, totalPlayers, totalSpheres);
     }
 
