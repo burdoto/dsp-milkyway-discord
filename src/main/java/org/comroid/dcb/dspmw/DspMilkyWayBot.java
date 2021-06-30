@@ -13,11 +13,9 @@ import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class DspMilkyWayBot implements MessageCreateListener {
     public static final String ERROR_RESPONSE = "Error:500";
@@ -27,6 +25,8 @@ public class DspMilkyWayBot implements MessageCreateListener {
     private final FileHandle dir;
     private final FileHandle token;
     private final FileHandle steamId;
+    private final FileHandle lastUpdate;
+    private final FileHandle cacheFile;
     private final REST rest;
     private final DiscordApi discord;
     private final long loginKey = 0;
@@ -35,6 +35,8 @@ public class DspMilkyWayBot implements MessageCreateListener {
         this.dir = dir;
         this.token = dir.createSubFile("discord.txt");
         this.steamId = dir.createSubFile("steamId.txt");
+        this.lastUpdate = dir.createSubFile("lastupdate.txt");
+        this.cacheFile = dir.createSubFile("cache.bin");
         this.rest = new REST();
         this.discord = new DiscordApiBuilder()
                 .setToken(token.getContent())
@@ -76,6 +78,9 @@ public class DspMilkyWayBot implements MessageCreateListener {
     }
 
     private CompletableFuture<MilkyWayData> requestFullData() {
+        if (!lastUpdate.isEmpty() && Long.parseLong(lastUpdate.getContent()) + TimeUnit.HOURS.toMillis(3) > System.currentTimeMillis())
+            return CompletableFuture.completedFuture(MilkyWayData.read(cacheFile.getContent().getBytes()));
+        logger.info("Updating data cache...");
         return requestLoginKey().thenCompose(loginKey -> rest.request()
                 .method(REST.Method.GET)
                 .endpoint(MwEndpoint.DOWNLOAD, loginKey)
@@ -85,6 +90,13 @@ public class DspMilkyWayBot implements MessageCreateListener {
                     Reader reader = response.getData().orElseGet(ReaderUtil::empty);
                     byte[] data = ReaderUtil.toArray(reader);
                     String str = new String(data);
+                    try (Writer w = cacheFile.openWriter()) {
+                        w.write(str);
+                    } catch (IOException e) {
+                        logger.error("Could not write data cache", e);
+                    } finally {
+                        lastUpdate.setContent("" + System.currentTimeMillis());
+                    }
                     logger.info("Received MilkyWay data: " + (str.length() < 300 ? str : "(data too long)"));
 
                     // check for error data // fixme
@@ -97,13 +109,18 @@ public class DspMilkyWayBot implements MessageCreateListener {
     }
 
     @Override
-    public void onMessageCreate(MessageCreateEvent event) {
+    public void onMessageCreate(final MessageCreateEvent event) {
         if (event.getMessageAuthor().isYourself())
             return;
         if (!event.getMessageAuthor().isBotOwner())
             return;
         if (!event.getMessageContent().startsWith("!milkyway"))
             return;
+        String str;
+        CompletableFuture.supplyAsync(() -> sendMilkyWayData(event));
+    }
+
+    private Void sendMilkyWayData(MessageCreateEvent event) {
         String str;
         try {
             MilkyWayData data = requestFullData().join();
@@ -117,5 +134,6 @@ public class DspMilkyWayBot implements MessageCreateListener {
         }
         logger.info("Data: " + str);
         event.getChannel().sendMessage(str);
+        return null;
     }
 }
