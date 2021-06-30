@@ -37,12 +37,15 @@ public class DspMilkyWayBot implements MessageCreateListener {
         this.steamId = dir.createSubFile("steamId.txt");
         this.lastUpdate = dir.createSubFile("lastupdate.txt");
         this.cacheFile = dir.createSubFile("cache.bin");
+
         this.rest = new REST();
         this.discord = new DiscordApiBuilder()
                 .setToken(token.getContent())
                 .addListener(this)
                 .login()
                 .join();
+
+        System.out.println(requestFullData().join());
     }
 
     public static void main(String[] args) {
