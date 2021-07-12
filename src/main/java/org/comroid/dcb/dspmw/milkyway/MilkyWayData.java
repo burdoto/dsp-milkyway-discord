@@ -8,6 +8,8 @@ import org.comroid.util.Debug;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.LongBuffer;
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.Arrays;
 
 public final class MilkyWayData {
@@ -149,17 +151,31 @@ public final class MilkyWayData {
         return sailToString(totalSails);
     }
 
+    /*
+  public string PowerGenToString(long low, long high) {
+   high <= 0L ? low.ToString("#,##0") + " W" : string.Format("{0:#,##0},{1:000,000,000,000,000,000}", (object) high, (object) low) + " W";
+  }
+     */
     private String powerGenToString(long low, long high)
     {
+
+        return (high <= 0L
+                ? new DecimalFormat("#,##0").format(low)
+                : new DecimalFormat("#,##0").format(high) + '_' + new DecimalFormat("000,000,000,000,000,000").format(low))
+                + " W";
+        /*
         if (high <= 0)
         {
             return String.format("%3d", low) + " W";
         }
         return Long.toString(high).substring(0, 4) + String.format("%18d", low) + " W";
+         */
     }
 
+    // ((double) count / 100000000.0).ToString("#,##0.0")
     private String sailToString(long count)
     {
-        return String.format("%4.0f", ((double)count / 1000000.0 - 0.5));
+        return new DecimalFormat("#,##0.0").format(count / 100_000_000.0);
+        //return String.format("%4.0f", ((double)count / 1000000.0 - 0.5));
     }
 }
