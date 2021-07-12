@@ -1,18 +1,23 @@
 package org.comroid.dcb.dspmw.milkyway;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comroid.api.BitmaskAttribute;
 import org.comroid.dcb.dspmw.DspMilkyWayBot;
 import org.comroid.util.Bitmask;
 import org.comroid.util.Debug;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.LongBuffer;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public final class MilkyWayData {
+    private static final Logger logger = LogManager.getLogger();
     private long totalGenCapMore;
     private long totalGenCapLess;
     private long totalSails;
@@ -44,10 +49,13 @@ public final class MilkyWayData {
         return String.format("MilkyWayData{" +
                         "\n\ttotalGenerated\t\t= %s," +
                         "\n\ttotalSails\t\t\t= %s," +
-                        "\n\ttotalPlayers\t\t= %d," +
-                        "\n\ttotalSpheres\t\t= %d" +
+                        "\n\ttotalPlayers\t\t= %s," +
+                        "\n\ttotalSpheres\t\t= %s" +
                         "\n}",
-                getPowerGen(), getSailsCount(), totalPlayers, totalSpheres);
+                getPowerGen(),
+                getSailsCount(),
+                new DecimalFormat().format(totalPlayers),
+                new DecimalFormat().format(totalSpheres));
     }
 
     private MilkyWayData() {
@@ -104,11 +112,18 @@ public final class MilkyWayData {
 		totalsailLaunchedText.text = SailToString(displayTotalSailLaunchedLessThanE);
          */
     public static MilkyWayData read(byte[] data) {
+        int dl = data.length;
+        logger.info("Reversing MilkyWay data: " + Arrays.toString(Arrays.copyOfRange(data, 0, Math.min(dl, 64))));
+        byte[] buf = new byte[dl];
+        for (int i = 0; i < dl; i++)
+            buf[i] = data[dl - i - 1];
+        data = buf;
+
         MilkyWayData it = new MilkyWayData();
         ByteBuffer wrap;
-        byte[] buf;
 
         final int base = 24 + 4;
+        logger.info("Reading MilkyWay data: " + Arrays.toString(Arrays.copyOfRange(data, 0, Math.min(dl, 64))));
 
         buf = Arrays.copyOfRange(data, base, base + 8);
         Debug.printByteArrayDump(Debug.logger, "totalGenCapMore", buf);
@@ -158,10 +173,9 @@ public final class MilkyWayData {
      */
     private String powerGenToString(long low, long high)
     {
-
         return (high <= 0L
                 ? new DecimalFormat("#,##0").format(low)
-                : new DecimalFormat("#,##0").format(high) + '_' + new DecimalFormat("000,000,000,000,000,000").format(low))
+                : new DecimalFormat("#,##0").format(high) + '.' + new DecimalFormat("000,000,000,000,000,000").format(low))
                 + " W";
         /*
         if (high <= 0)

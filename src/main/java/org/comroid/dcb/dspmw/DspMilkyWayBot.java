@@ -14,6 +14,7 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -92,7 +93,7 @@ public class DspMilkyWayBot implements MessageCreateListener {
                 .thenApply(response -> {
                     Reader reader = response.getData().orElseGet(ReaderUtil::empty);
                     byte[] data = ReaderUtil.toArray(reader);
-                    String str = new String(data);
+                    String str = Arrays.toString(Arrays.copyOfRange(data, 0, Math.min(data.length, 64)));
                     try (Writer w = cacheFile.openWriter()) {
                         w.write(str);
                     } catch (IOException e) {
@@ -100,7 +101,7 @@ public class DspMilkyWayBot implements MessageCreateListener {
                     } finally {
                         lastUpdate.setContent("" + System.currentTimeMillis());
                     }
-                    logger.info("Received MilkyWay data: " + (str.length() < 300 ? str : "(data too long)"));
+                    logger.info("Received MilkyWay data: " + str);
 
                     // check for error data // fixme
                     if (data.length == 0 || data[0] == 'E') {
