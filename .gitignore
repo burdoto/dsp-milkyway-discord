@@ -25,3 +25,9 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/gradle,intellij
+.classpath
+.project
+*.prefs
+bin/main/log4j2.xml
+bin/main/org/comroid/api/context.properties
+*.class
