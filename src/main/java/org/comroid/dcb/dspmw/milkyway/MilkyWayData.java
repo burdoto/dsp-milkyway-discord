@@ -2,19 +2,12 @@ package org.comroid.dcb.dspmw.milkyway;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.comroid.api.BitmaskAttribute;
-import org.comroid.dcb.dspmw.DspMilkyWayBot;
-import org.comroid.util.Bitmask;
 import org.comroid.util.Debug;
 
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.LongBuffer;
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public final class MilkyWayData {
     private static final Logger logger = LogManager.getLogger();
@@ -44,18 +37,12 @@ public final class MilkyWayData {
         return totalSpheres;
     }
 
-    @Override
-    public String toString() {
-        return String.format("MilkyWayData{" +
-                        "\n\ttotalGenerated\t\t= %s," +
-                        "\n\ttotalSails\t\t\t= %s," +
-                        "\n\ttotalPlayers\t\t= %s," +
-                        "\n\ttotalSpheres\t\t= %s" +
-                        "\n}",
-                getPowerGen(),
-                getSailsCount(),
-                new DecimalFormat().format(totalPlayers),
-                new DecimalFormat().format(totalSpheres));
+    public String getPowerGen() {
+        return powerGenToString(totalGenCapLess, totalGenCapMore);
+    }
+
+    public String getSailsCount() {
+        return sailToString(totalSails);
     }
 
     private MilkyWayData() {
@@ -158,12 +145,18 @@ public final class MilkyWayData {
         return it;
     }
 
-    public String getPowerGen() {
-        return powerGenToString(totalGenCapLess, totalGenCapMore);
-    }
-
-    public String getSailsCount() {
-        return sailToString(totalSails);
+    @Override
+    public String toString() {
+        return String.format("MilkyWayData{" +
+                        "\n\ttotalGenerated\t\t= %s," +
+                        "\n\ttotalSails\t\t\t= %s," +
+                        "\n\ttotalPlayers\t\t= %s," +
+                        "\n\ttotalSpheres\t\t= %s" +
+                        "\n}",
+                getPowerGen(),
+                getSailsCount(),
+                new DecimalFormat().format(totalPlayers),
+                new DecimalFormat().format(totalSpheres));
     }
 
     /*
@@ -171,8 +164,7 @@ public final class MilkyWayData {
    high <= 0L ? low.ToString("#,##0") + " W" : string.Format("{0:#,##0},{1:000,000,000,000,000,000}", (object) high, (object) low) + " W";
   }
      */
-    private String powerGenToString(long low, long high)
-    {
+    private String powerGenToString(long low, long high) {
         return (high <= 0L
                 ? new DecimalFormat("#,##0").format(low)
                 : new DecimalFormat("#,##0").format(high) + '.' + new DecimalFormat("000,000,000,000,000,000").format(low))
@@ -187,8 +179,7 @@ public final class MilkyWayData {
     }
 
     // ((double) count / 100000000.0).ToString("#,##0.0")
-    private String sailToString(long count)
-    {
+    private String sailToString(long count) {
         return new DecimalFormat("#,##0.0").format(count / 100_000_000.0);
         //return String.format("%4.0f", ((double)count / 1000000.0 - 0.5));
     }
